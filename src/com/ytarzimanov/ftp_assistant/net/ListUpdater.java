@@ -205,7 +205,7 @@ public class ListUpdater {
 							
 						if (isStatupLoad == true){
 							notifyOnInit();
-							SimpleLog.getInstance().trace(this.getClass(),"List files were downloaded from ftp server");
+							SimpleLog.getInstance().trace(this.getClass(),"Checking of ftp folder(s) was finished");
 							isStatupLoad = false;
 						}
 

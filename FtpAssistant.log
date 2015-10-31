@@ -1,0 +1,27 @@
+!BUG REPORT
+!Date     :31.10.15 6:19
+!Message  :null
+!ClassName:java.lang.NullPointerException
+!Stack    :
+!         :com.ytarzimanov.ftp_assistant.models.core.Global.saveToPreferences(Global.java:223)
+!         :com.ytarzimanov.ftp_assistant.models.core.Global.save(Global.java:136)
+!         :com.ytarzimanov.ftp_assistant.models.core.Global.save(Global.java:143)
+!         :com.ytarzimanov.ftp_assistant.models.core.Global.load(Global.java:149)
+!         :com.ytarzimanov.ftp_assistant.models.core.Global.<init>(Global.java:63)
+!         :com.ytarzimanov.ftp_assistant.models.core.Global.getInstane(Global.java:34)
+!         :com.ytarzimanov.ftp_assistant.MainForm.<init>(MainForm.java:237)
+!         :com.ytarzimanov.ftp_assistant.MainForm$1.run(MainForm.java:102)
+!         :java.awt.event.InvocationEvent.dispatch(Unknown Source)
+!         :java.awt.EventQueue.dispatchEventImpl(Unknown Source)
+!         :java.awt.EventQueue.access$500(Unknown Source)
+!         :java.awt.EventQueue$3.run(Unknown Source)
+!         :java.awt.EventQueue$3.run(Unknown Source)
+!         :java.security.AccessController.doPrivileged(Native Method)
+!         :java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(Unknown Source)
+!         :java.awt.EventQueue.dispatchEvent(Unknown Source)
+!         :java.awt.EventDispatchThread.pumpOneEventForFilters(Unknown Source)
+!         :java.awt.EventDispatchThread.pumpEventsForFilter(Unknown Source)
+!         :java.awt.EventDispatchThread.pumpEventsForHierarchy(Unknown Source)
+!         :java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+!         :java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+!         :java.awt.EventDispatchThread.run(Unknown Source)

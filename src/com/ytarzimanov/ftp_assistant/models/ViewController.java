@@ -102,9 +102,8 @@ public class ViewController implements OnChangeGroupCheckBox,
 						@Override
 						public void run(){
 							try {
-								Runtime.getRuntime().exec(item.getDownloadFilePath());
+								Runtime.getRuntime().exec("cmd /c " + item.getDownloadFilePath());
 							} catch (IOException e) {
-								
 							}
 						}
 					}.start();

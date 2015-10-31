@@ -130,21 +130,21 @@ public class MainForm extends JDialog implements ActionListener,
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
 		scrollPane.setColumnHeaderView(toolBar);
+		System.getProperty("java.class.path");
 		
-		
-		btn_copy = new JButton(new ImageIcon(Class.class.getResource("/copy.png")));
+		btn_copy = new JButton(new ImageIcon(ClassLoader.getSystemResource("copy.png")));
 		toolBar.add(btn_copy);
 		btn_copy.setActionCommand(ACTION_COPY);
 		btn_copy.setFocusable(false);
 		btn_copy.setMargin(new Insets(1, 1, 1, 1));
 		
-		JButton btn_refresh = new JButton(new ImageIcon(Class.class.getResource("/refresh.png")));
+		JButton btn_refresh = new JButton(new ImageIcon(ClassLoader.getSystemResource("refresh.png")));
 		toolBar.add(btn_refresh);
 		btn_refresh.setActionCommand(ACTION_REFRESH);
 		btn_refresh.setFocusable(false);
 		btn_refresh.setMargin(new Insets(1, 1, 1, 1));
 				
-		JButton btn_settings = new JButton(new ImageIcon(Class.class.getResource("/settings.png")));
+		JButton btn_settings = new JButton(new ImageIcon(ClassLoader.getSystemResource("settings.png")));
 		toolBar.add(btn_settings);
 		btn_settings.setFocusable(false);
 		btn_settings.setActionCommand(ACTION_OPTIONS);

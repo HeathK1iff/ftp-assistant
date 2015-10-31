@@ -6,10 +6,15 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.JTabbedPane;
 import javax.swing.GroupLayout;
@@ -31,6 +36,7 @@ import javax.swing.JPopupMenu;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 import javax.swing.JMenuItem;
 
@@ -82,6 +88,7 @@ public class SettingForm extends JDialog implements ActionListener, TreeSelectio
 	private Object prevEditObject;
 	private JCheckBox chkSrvUsePassiveMode;
 	private JCheckBox chkEnabledCopyTo;
+	private Boolean isLoading = false;
 	
 	public void createGUI(){
 		setTitle("Options");
@@ -157,10 +164,40 @@ public class SettingForm extends JDialog implements ActionListener, TreeSelectio
 					JLabel lblDirCaption = new JLabel("Caption:");
 					
 					tfDirCaption = new JTextField();
+					tfDirCaption.getDocument().addDocumentListener(new DocumentListener() {
+
+						@Override
+						public void changedUpdate(DocumentEvent arg0) {
+							if (!isLoading){
+							  savePreviousObject();
+							  tvServers.updateUI();
+							}
+						}
+
+						@Override
+						public void insertUpdate(DocumentEvent arg0) {
+							if (!isLoading){
+							  savePreviousObject();
+							  tvServers.updateUI();
+							}
+						}
+
+						@Override
+						public void removeUpdate(DocumentEvent arg0) {
+							if (!isLoading){
+							  savePreviousObject();
+							  tvServers.updateUI();
+							}
+						}
+					    // implement the methods
+					});
+					
+					
 					tfDirCaption.setToolTipText("Caption for group");
 					tfDirCaption.setColumns(10);
 					
 					tfDirSource = new JTextField();
+					tfDirSource.setEditable(false);
 					tfDirSource.setToolTipText("Path of ftp source");
 					tfDirSource.setColumns(10);
 					
@@ -173,6 +210,7 @@ public class SettingForm extends JDialog implements ActionListener, TreeSelectio
 					JLabel lbDirDownloadDir = new JLabel("Directory:");
 					
 					tfDirDownload = new JTextField();
+					tfDirDownload.setEditable(false);
 					tfDirDownload.setColumns(10);
 					
 					tfDirFilter = new JTextField();
@@ -191,11 +229,36 @@ public class SettingForm extends JDialog implements ActionListener, TreeSelectio
 					tfDirCopyToFormat.setToolTipText(TOOLTIP_COPY_TO_FIELD);
 					tfDirCopyToFormat.setColumns(10);
 					
-					chkDirAutoDownload = new JCheckBox("Auto donwload of new files");
+					chkDirAutoDownload = new JCheckBox("Auto download of new files");
 					
 					JLabel ldDirDateFormat = new JLabel("Date:");
 					
 					JLabel lbDirCopyFormat = new JLabel("Copy To:");
+					
+					JButton btnEdit = new JButton(new ImageIcon(ClassLoader.getSystemResource("folder.png")));
+					btnEdit.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							JFileChooser fileChouser = new JFileChooser();
+							fileChouser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+							fileChouser.setCurrentDirectory(new File(tfDirDownload.getText()));
+							int ret = fileChouser.showDialog(null, "Save");                
+							if (ret == JFileChooser.APPROVE_OPTION) {
+							    File file = fileChouser.getSelectedFile();
+							    tfDirDownload.setText(file.toPath().toString());
+						}
+						}});
+					
+					JButton btnEdit_1 = new JButton(new ImageIcon(ClassLoader.getSystemResource("browse.png")));
+					btnEdit_1.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							savePreviousObject();
+							RemoteBrowser browser = new RemoteBrowser((Directory)prevEditObject);
+							browser.setModal(true);
+							browser.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+							browser.setVisible(true);
+							loadDirectoryInfo((Directory)prevEditObject);
+						}
+					});
 					GroupLayout gl_pnlDirLevel = new GroupLayout(pnlDirLevel);
 					gl_pnlDirLevel.setHorizontalGroup(
 						gl_pnlDirLevel.createParallelGroup(Alignment.LEADING)
@@ -204,27 +267,35 @@ public class SettingForm extends JDialog implements ActionListener, TreeSelectio
 								.addGroup(gl_pnlDirLevel.createParallelGroup(Alignment.LEADING)
 									.addGroup(gl_pnlDirLevel.createSequentialGroup()
 										.addGroup(gl_pnlDirLevel.createParallelGroup(Alignment.LEADING)
-											.addGroup(gl_pnlDirLevel.createParallelGroup(Alignment.LEADING, false)
-												.addComponent(lbDirDownloadDir, GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-												.addComponent(lbDirFilter, GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-												.addComponent(lbDirSource, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-											.addComponent(lblDirCaption, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
-											.addComponent(lbDirDisplay, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
-											.addComponent(ldDirDateFormat, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
-											.addComponent(lbDirCopyFormat, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE))
-										.addGap(12)
+											.addGroup(gl_pnlDirLevel.createSequentialGroup()
+												.addGroup(gl_pnlDirLevel.createParallelGroup(Alignment.LEADING)
+													.addGroup(gl_pnlDirLevel.createParallelGroup(Alignment.LEADING, false)
+														.addComponent(lbDirDownloadDir, GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
+														.addComponent(lbDirFilter, GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE))
+													.addComponent(lblDirCaption, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+													.addComponent(lbDirDisplay, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+													.addComponent(ldDirDateFormat, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+													.addComponent(lbDirCopyFormat, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE))
+												.addGap(12))
+											.addGroup(gl_pnlDirLevel.createSequentialGroup()
+												.addComponent(lbDirSource, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+												.addPreferredGap(ComponentPlacement.RELATED)))
 										.addGroup(gl_pnlDirLevel.createParallelGroup(Alignment.TRAILING)
-											.addComponent(tfDirCopyToFormat, GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
-											.addComponent(tfDirDateFormat, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
-											.addComponent(tfDirDisplayFormat, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
-											.addComponent(tfDirCaption, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
-											.addComponent(tfDirFilter, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
-											.addComponent(tfDirDownload, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
-											.addComponent(tfDirSource, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE))
-										.addGap(21))
-									.addGroup(gl_pnlDirLevel.createSequentialGroup()
-										.addComponent(chkDirAutoDownload)
-										.addContainerGap(135, Short.MAX_VALUE))))
+											.addComponent(tfDirCopyToFormat, GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
+											.addComponent(tfDirDateFormat, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
+											.addComponent(tfDirDisplayFormat, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
+											.addComponent(tfDirFilter, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
+											.addComponent(tfDirCaption, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
+											.addGroup(gl_pnlDirLevel.createSequentialGroup()
+												.addGroup(gl_pnlDirLevel.createParallelGroup(Alignment.TRAILING)
+													.addComponent(tfDirSource, GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
+													.addComponent(tfDirDownload, GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE))
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addGroup(gl_pnlDirLevel.createParallelGroup(Alignment.LEADING)
+													.addComponent(btnEdit)
+													.addComponent(btnEdit_1)))))
+									.addComponent(chkDirAutoDownload))
+								.addContainerGap())
 					);
 					gl_pnlDirLevel.setVerticalGroup(
 						gl_pnlDirLevel.createParallelGroup(Alignment.LEADING)
@@ -234,13 +305,17 @@ public class SettingForm extends JDialog implements ActionListener, TreeSelectio
 									.addComponent(tfDirCaption, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 									.addComponent(lblDirCaption))
 								.addPreferredGap(ComponentPlacement.UNRELATED)
-								.addGroup(gl_pnlDirLevel.createParallelGroup(Alignment.BASELINE)
-									.addComponent(tfDirSource, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addComponent(lbDirSource))
+								.addGroup(gl_pnlDirLevel.createParallelGroup(Alignment.TRAILING)
+									.addComponent(btnEdit_1)
+									.addGroup(gl_pnlDirLevel.createParallelGroup(Alignment.BASELINE)
+										.addComponent(tfDirSource, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(lbDirSource)))
 								.addPreferredGap(ComponentPlacement.UNRELATED)
-								.addGroup(gl_pnlDirLevel.createParallelGroup(Alignment.BASELINE)
-									.addComponent(lbDirDownloadDir)
-									.addComponent(tfDirDownload, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addGroup(gl_pnlDirLevel.createParallelGroup(Alignment.TRAILING)
+									.addGroup(gl_pnlDirLevel.createParallelGroup(Alignment.BASELINE)
+										.addComponent(lbDirDownloadDir)
+										.addComponent(tfDirDownload, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+									.addComponent(btnEdit))
 								.addPreferredGap(ComponentPlacement.UNRELATED)
 								.addGroup(gl_pnlDirLevel.createParallelGroup(Alignment.BASELINE)
 									.addComponent(tfDirFilter, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -402,11 +477,13 @@ public class SettingForm extends JDialog implements ActionListener, TreeSelectio
 	}
 	
 	private void loadServerInfo(Server item){
+		isLoading = true;
 		tfSrvHost.setText(item.getHost());
 		tfSrvLogin.setText(item.getLogin());
 		pfSrvUserPassword.setText(IS_EMPTY);
 		chkSrvUsePassiveMode.setSelected(item.getUsePassiveMode());
 		prevEditObject = item;
+		isLoading = false;
 	}
 	
 	private void saveServerInfo(Server item){
@@ -446,6 +523,7 @@ public class SettingForm extends JDialog implements ActionListener, TreeSelectio
 	}
 	
 	private void loadDirectoryInfo(Directory Item){
+		isLoading = true;
 		tfDirCaption.setText(Item.getCaption()); 
 		tfDirSource.setText(Item.getRemoteFolder());
 		tfDirDownload.setText(Item.getDownloadFolder());
@@ -455,11 +533,12 @@ public class SettingForm extends JDialog implements ActionListener, TreeSelectio
 		tfDirCopyToFormat.setText(Item.getCopyToClipboardFormat());
 		chkDirAutoDownload.setSelected(Item.getAutoDownload());
 		prevEditObject = Item;
+		isLoading = false;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		if (arg0.getActionCommand() == "OK"){
+		if (arg0.getActionCommand().equals("OK")){
 			saveCommonOptions();
 			savePreviousObject();
 			Global.getInstane().save();
@@ -489,18 +568,28 @@ public class SettingForm extends JDialog implements ActionListener, TreeSelectio
 		}
 		
 		if (arg0.getActionCommand() == TREE_LEVEL_REMOVE){
-			if (tvServers.getLastSelectedPathComponent() == null)
+		    int res = JOptionPane.showOptionDialog(null, 
+				      "Do you want to remove item?", 
+				      "Remove", 
+				      JOptionPane.YES_NO_OPTION, 
+				      JOptionPane.QUESTION_MESSAGE, 
+				      null, null, null);
+				
+			if (res == JOptionPane.YES_OPTION)
+			{
+					
+			  if (tvServers.getLastSelectedPathComponent() == null)
 				return;
 			
-			savePreviousObject();
-			if (tvServers.getLastSelectedPathComponent() instanceof Directory){
+			  savePreviousObject();
+			  if (tvServers.getLastSelectedPathComponent() instanceof Directory){
 				Directory dir = (Directory)tvServers.getLastSelectedPathComponent();
 				Server srv = dir.getServer();
 				srv.remove(dir);
 				path = new TreePath(new Object[]{Global.getInstane(), srv});
-			}
-			else
-			{
+		   	  }
+			  else
+			  {
 				if (tvServers.getLastSelectedPathComponent() instanceof Server){
 					((Server)tvServers.getLastSelectedPathComponent()).remove();
 					Global.getInstane().getServerList().remove(tvServers.getLastSelectedPathComponent());
@@ -513,6 +602,7 @@ public class SettingForm extends JDialog implements ActionListener, TreeSelectio
 			levelLayout.show(pnlLevels, TREE_LEVEL_EMPTY);
 			tvServers.setSelectionPath(path);
 			tvServers.updateUI();
+			}
 		}
 		
 		if (arg0.getActionCommand() == TREE_LEVEL_UP){
@@ -545,7 +635,7 @@ public class SettingForm extends JDialog implements ActionListener, TreeSelectio
 		}		
 		
 		Global.getInstane().save();
-		if (arg0.getActionCommand() == "OK")
+		if (arg0.getActionCommand().equals("OK"))
 			dispose();
 	}
 
