@@ -45,7 +45,7 @@ public class RemoteBrowser extends JDialog {
 	
 	@SuppressWarnings("unchecked")
 	public void loadList(ArrayList<String> listPath) throws IOException{
-		String path = "/";
+		String path = "";
 		for (int i = 0; i < listPath.size(); i++){
 			path += listPath.get(i) + "/";
 		}
@@ -118,7 +118,6 @@ public class RemoteBrowser extends JDialog {
 		fldPath = new JTextField();
 		pnlTop.add(fldPath, BorderLayout.CENTER);
 		fldPath.setHorizontalAlignment(SwingConstants.LEFT);
-		fldPath.setText("/");
 		fldPath.setEnabled(false);
 		fldPath.setEditable(false);
 		fldPath.setColumns(10);
@@ -169,10 +168,9 @@ public class RemoteBrowser extends JDialog {
 			    if (dir.getRemoteFolder().charAt(0) == '/'){
 			    	path = path.substring(1, dir.getRemoteFolder().length());
 			    }
-			
 			    listPath = new ArrayList(Arrays.asList(path.split("/")));
-			    loadList(listPath);	
-			  }
+			    loadList(listPath);
+			  }		  	  	
 			}
 			else
 				 JOptionPane.showMessageDialog(this, "Connection was not estiblished. Please check connection setting");

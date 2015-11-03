@@ -25,7 +25,7 @@ public class Directory{
   static final public String ATT_AUTO_DOWNLOAD_NEW_FILES = "AUTO_DOWNLOAD_NEW_FILES";
 	
   private String mCaption ="New directory";	
-  private String mRemoteFolder = "";
+  private String mRemoteFolder = "/";
   private String mDownloadFolder ="";
   private String mSourceFolderFilter ="";
   private String mDisplayFormat = "";
@@ -169,7 +169,7 @@ public class Directory{
   
   public void load(Preferences node){
 	mUid = node.name();
-	mRemoteFolder= node.get(ATT_SOURCE_FOLDER,"");
+	mRemoteFolder= node.get(ATT_SOURCE_FOLDER,"/");
 	mCaption = node.get(ATT_CAPTION, "");
 	mSourceFolderFilter = node.get(ATT_FILTER, "");
 	mVisibleCountItems = node.getInt(ATT_SHOW, 20);
