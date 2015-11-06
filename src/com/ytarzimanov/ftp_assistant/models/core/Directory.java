@@ -159,8 +159,20 @@ public class Directory{
 	  return owner;
   }
   
-  
-  public Directory(){
+  public Directory(Server owner, Directory item){
+	this.owner = owner;
+	setSourceFolder(item.getRemoteFolder());
+	setCaption(item.getCaption());
+	setSourceFolderFilter(item.getSourceFolderFilter());
+	setVisibleCountItems(item.getVisibleCountItems());
+	setDisplayDateTimeFormat(item.getDisplayDateTimeFormat());
+	setAutoDownload(item.getAutoDownload());
+	setCopyToClipboardFormat(item.getCopyToClipboardFormat());
+	setDisplayFormat(item.getDisplayFormat());
+	setDownloadFolder(item.getDownloadFolder());
+	setCopyToClipBtnChecked(item.getCopyToClipBtnChecked());  
+	setExpandedGroup(item.getExpandedGroup()); 
+	setVisibleIndex(item.getVisibleIndex());
   }
   
   public Directory(Preferences node){

@@ -45,7 +45,7 @@ public class RemoteBrowser extends JDialog {
 	
 	@SuppressWarnings("unchecked")
 	public void loadList(ArrayList<String> listPath) throws IOException{
-		String path = "";
+		String path = "/";
 		for (int i = 0; i < listPath.size(); i++){
 			path += listPath.get(i) + "/";
 		}
@@ -173,7 +173,7 @@ public class RemoteBrowser extends JDialog {
 			  }		  	  	
 			}
 			else
-				 JOptionPane.showMessageDialog(this, "Connection was not estiblished. Please check connection setting");
+			  JOptionPane.showMessageDialog(this, "Connection was not estiblished. Please check connection setting");
 			 
 			
 		} catch (IOException e) {};

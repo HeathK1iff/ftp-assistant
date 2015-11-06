@@ -65,6 +65,13 @@ public class Server {
 		}	
     }
     
+    public Directory clone(Directory item){
+    	Directory item1 = new Directory(this, item);
+    	item1.setVisibleIndex(mDirs.size());
+		mDirs.add(item1);
+    	return item1;
+    }
+    
     public void remove(Directory item){
     	Preferences prefUser = Preferences.userRoot().node(Global.ROOT_PROGRAM);
     	try {

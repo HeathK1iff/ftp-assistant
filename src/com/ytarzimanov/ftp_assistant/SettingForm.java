@@ -55,6 +55,7 @@ public class SettingForm extends JDialog implements ActionListener, TreeSelectio
 	private static final String TREE_LEVEL_2 = "DIR_LEVEL";
 	private static final String TREE_LEVEL_EMPTY = "EMPTY_LEVEL";
 	private static final String TREE_LEVEL_ADD = "ADD_LEVEL";
+	private static final String TREE_LEVEL_CLONE = "CLONE_LEVEL";
 	private static final String TREE_LEVEL_UP = "UP_LEVEL";
 	private static final String TREE_LEVEL_DOWN = "DOWN_LEVEL";
 	private static final String TREE_LEVEL_REMOVE = "REMOVE_LEVEL";	
@@ -437,6 +438,11 @@ public class SettingForm extends JDialog implements ActionListener, TreeSelectio
 		miAdd.setActionCommand(TREE_LEVEL_ADD);
 		popupMenu.add(miAdd);
 		
+		JMenuItem miClone = new JMenuItem("Clone");
+		miClone.setActionCommand(TREE_LEVEL_CLONE);
+		miClone.addActionListener(this);
+		popupMenu.add(miClone);
+		
 		JMenuItem miRemove = new JMenuItem("Remove");
 		popupMenu.add(miRemove);
 		miRemove.setActionCommand(TREE_LEVEL_REMOVE);
@@ -566,6 +572,22 @@ public class SettingForm extends JDialog implements ActionListener, TreeSelectio
 		tvServers.setSelectionPath(path);
     	tvServers.updateUI();
 		}
+		
+		if (arg0.getActionCommand() == TREE_LEVEL_CLONE){
+			if (tvServers.getLastSelectedPathComponent() == null)
+				return;
+			Object obj = tvServers.getLastSelectedPathComponent();
+			if (obj instanceof Directory){
+				prevEditObject = ((Directory) obj).getServer().clone((Directory) obj);
+				loadDirectoryInfo((Directory)prevEditObject);
+				levelLayout.show(pnlLevels, TREE_LEVEL_2);
+				path = new TreePath(new Object[]{Global.getInstane(), ((Directory)prevEditObject).getServer(), prevEditObject});
+				tvServers.setSelectionPath(path);
+		    	tvServers.updateUI();
+				
+			}
+		}
+		
 		
 		if (arg0.getActionCommand() == TREE_LEVEL_REMOVE){
 		    int res = JOptionPane.showOptionDialog(null, 
