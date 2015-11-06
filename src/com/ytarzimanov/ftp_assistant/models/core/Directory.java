@@ -39,7 +39,7 @@ public class Directory{
   private String mUid;
   private ArrayList<File> mFiles = new ArrayList<File>();
   private Server owner;
-  private SimpleDateFormat dateFormatter;
+  private SimpleDateFormat dateFormatter = new SimpleDateFormat(mDisplayDateTimeFormat);
   
   public SimpleDateFormat getDateFormatter(){
 	  return dateFormatter;
